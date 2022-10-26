@@ -15,7 +15,7 @@ library(hubEnsembles)
 library(dplyr)
 
 # Set the environment - dates should change each week & check to see if the file paths are correct 
-userid = "rpe5"
+userid = "nqr2"
 forecast_date = "2022-10-24" # Monday
 sixweeks_before_forecast_date = "2022-09-12" # 6 weeks ago Monday
 
@@ -111,7 +111,7 @@ for(i in starting_location){
 dev.off()
 
 pdf(paste0(output_dir, "all-models-full-page-", forecast_date, ".pdf"))
-for(i in starting_location){
+for(i in seq(1, length(all_locations), 1)){
   plot_forecasts(
     forecast_data = forecast_data %>% filter(location %in% all_locations[i]),
     facet = .~location,
