@@ -15,7 +15,7 @@ library(hubEnsembles)
 library(dplyr)
 
 # Set the environment - dates should change each week & check to see if the file paths are correct 
-userid = "nqr2"
+userid = "rpe5"
 forecast_date = "2022-10-24" # Monday
 sixweeks_before_forecast_date = "2022-09-12" # 6 weeks ago Monday
 
@@ -153,6 +153,22 @@ for(i in starting_location){
     facet_scales = "free_y",
     facet_ncol = 1,
     facet_nrow = 3,
+    truth_data = truth_data %>% filter(target_end_date > sixweeks_before_forecast_date),
+    truth_source = "HealthData", 
+    title = "Weekly Influenza Incident Hospitalizations: observed and forecasted",
+    use_median_as_point = TRUE
+  )
+}
+dev.off()
+
+pdf(paste0(output_dir, "ensemble-full-page-", forecast_date, ".pdf"))
+for(i in seq(1, length(all_locations), 1)){
+  plot_forecasts(
+    forecast_data = ensemble_forecast %>% filter(location %in% all_locations[i]),
+    facet = .~location,
+    facet_scales = "free_y",
+    facet_ncol = 1,
+    facet_nrow = 1,
     truth_data = truth_data %>% filter(target_end_date > sixweeks_before_forecast_date),
     truth_source = "HealthData", 
     title = "Weekly Influenza Incident Hospitalizations: observed and forecasted",
