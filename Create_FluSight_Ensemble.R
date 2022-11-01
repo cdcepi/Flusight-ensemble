@@ -7,7 +7,7 @@
 # devtools::install_github("reichlab/zoltr")
 # devtools::install_github("reichlab/covidData")
 # devtools::install_github("reichlab/simplets")
-# devtools::install_github("reichlab/covidHubUtils")
+#devtools::install_github("reichlab/covidHubUtils")
 #devtools::install_github("reichlab/hubEnsembles")
 
 library(covidHubUtils)
@@ -16,8 +16,8 @@ library(dplyr)
 
 # Set the environment - dates should change each week & check to see if the file paths are correct 
 userid = "rpe5"
-forecast_date = "2022-10-24" # Monday
-sixweeks_before_forecast_date = "2022-09-12" # 6 weeks ago Monday
+forecast_date = "2022-10-31" # Monday
+sixweeks_before_forecast_date = "2022-09-19" # 6 weeks ago Monday
 
 ensemble_code_path = paste0("C:/Users/",userid,"/Desktop/GitHub/Flusight-ensemble")
 flusight_path = paste0("C:/Users/",userid,"/Desktop/GitHub/Flusight-forecast-data") #using my forked repo for this now
