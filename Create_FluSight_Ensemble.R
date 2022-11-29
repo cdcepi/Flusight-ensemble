@@ -15,7 +15,7 @@ library(hubEnsembles)
 library(dplyr)
 
 # Set the environment - dates should change each week & check to see if the file paths are correct 
-userid = "rpe5"
+userid = "nqr2"
 forecast_date = "2022-11-28" # Monday
 sixweeks_before_forecast_date = "2022-10-17" # 6 weeks ago Monday
 
