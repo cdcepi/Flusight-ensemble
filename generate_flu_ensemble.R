@@ -22,7 +22,7 @@ current_forecasts <- hub_con |>
 # QUANTILE ENSEMBLE
 quantile_forecasts <- current_forecasts |>
   dplyr::filter(output_type == "quantile") |>
-  dplyr::mutate(output_type_id=as.numeric(output_type_id)) 
+  dplyr::mutate(output_type_id=as.character(as.numeric(output_type_id))) # ensures quantiles treated the same regardless of presence of trailing zeros
   
 # generate median ensemble
 median_name <- "FluSight-median"
@@ -38,18 +38,18 @@ median_ensemble_outputs <- quantile_forecasts |>
 # median_ensemble_path <- paste(hub_path, "/model-output/", median_name, "/", current_ref_date, "-", median_name, ".csv", sep="") 
 # readr::write_csv(median_ensemble_outputs, median_ensemble_path)
   
-# generate linear pool
-lop_norm_name <- "FluSight-lop_norm"
-lop_norm_outputs <- quantile_forecasts |>
-  hubEnsembles::linear_pool(
-    model_id=lop_norm_name, 
-    task_id_cols=task_id_cols
-  ) |>
-  dplyr::mutate(value = ifelse(value < 0, 0, value)) |>
-  dplyr::select(-model_id)
-
-lop_norm_path <- paste(hub_path, "/model-output/", lop_norm_name, "/", current_ref_date, "-", lop_norm_name, ".csv", sep="") 
-readr::write_csv(lop_norm_outputs, lop_norm_path)
+# generate linear pool of quantiles (if desired)
+# lop_norm_name <- "FluSight-lop_norm"
+# lop_norm_outputs <- quantile_forecasts |>
+#   hubEnsembles::linear_pool(
+#     model_id=lop_norm_name, 
+#     task_id_cols=task_id_cols
+#   ) |>
+#   dplyr::mutate(value = ifelse(value < 0, 0, value)) |>
+#   dplyr::select(-model_id)
+# 
+# lop_norm_path <- paste(hub_path, "/model-output/", lop_norm_name, "/", current_ref_date, "-", lop_norm_name, ".csv", sep="") 
+# readr::write_csv(lop_norm_outputs, lop_norm_path)
 
 
 # PMF ENSEMBLE
@@ -67,7 +67,6 @@ categorical_ensemble_outputs <- categorical_forecasts |>
 
 ensemble_name <- "FluSight-ensemble"
 flusight_ensemble_outputs <- median_ensemble_outputs |>
-  dplyr::mutate(output_type_id=format(round(output_type_id, 3), nsmall=3)) |>
   dplyr::bind_rows(categorical_ensemble_outputs)
 flusight_ensemble_path <- paste(hub_path, "/model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
 readr::write_csv(flusight_ensemble_outputs, flusight_ensemble_path)
