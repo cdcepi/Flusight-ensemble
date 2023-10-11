@@ -39,17 +39,17 @@ median_ensemble_outputs <- quantile_forecasts |>
 # readr::write_csv(median_ensemble_outputs, median_ensemble_path)
   
 # generate linear pool of quantiles (if desired)
-# lop_norm_name <- "FluSight-lop_norm"
-# lop_norm_outputs <- quantile_forecasts |>
-#   hubEnsembles::linear_pool(
-#     model_id=lop_norm_name, 
-#     task_id_cols=task_id_cols
-#   ) |>
-#   dplyr::mutate(value = ifelse(value < 0, 0, value)) |>
-#   dplyr::select(-model_id)
-# 
-# lop_norm_path <- paste(hub_path, "/model-output/", lop_norm_name, "/", current_ref_date, "-", lop_norm_name, ".csv", sep="") 
-# readr::write_csv(lop_norm_outputs, lop_norm_path)
+lop_norm_name <- "FluSight-lop_norm"
+lop_norm_outputs <- quantile_forecasts |>
+  hubEnsembles::linear_pool(
+    model_id=lop_norm_name,
+    task_id_cols=task_id_cols
+  ) |>
+  dplyr::mutate(value = ifelse(value < 0, 0, value)) |>
+  dplyr::select(-model_id)
+
+lop_norm_path <- paste(hub_path, "/model-output/", lop_norm_name, "/", current_ref_date, "-", lop_norm_name, ".csv", sep="")
+readr::write_csv(lop_norm_outputs, lop_norm_path)
 
 
 # PMF ENSEMBLE
