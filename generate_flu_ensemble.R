@@ -72,3 +72,4 @@ flusight_ensemble_outputs <- median_ensemble_outputs |>
 flusight_ensemble_path <- paste(out_path, "/model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
 readr::write_csv(flusight_ensemble_outputs, flusight_ensemble_path)
 
+readr::write_csv(quantile_forecasts, "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble/model-output/FluSight-ensemble/all_quantile_forecasts.csv")
