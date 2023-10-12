@@ -8,7 +8,8 @@ library(hubUtils)
 current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
 task_id_cols <- c("reference_date", "location", "horizon", "target", "target_end_date")
   
-hub_path <- "../FluSight-forecast-hub"
+out_path <- "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble"
+hub_path <- "C:/Users/rpe5/Desktop/GitHub/FluSight-forecast-hub"
 hub_con <- connect_hub(hub_path) 
 current_forecasts <- hub_con |>
   dplyr::filter(
@@ -48,7 +49,7 @@ lop_norm_outputs <- quantile_forecasts |>
   dplyr::mutate(value = ifelse(value < 0, 0, value)) |>
   dplyr::select(-model_id)
 
-lop_norm_path <- paste(hub_path, "/model-output/", lop_norm_name, "/", current_ref_date, "-", lop_norm_name, ".csv", sep="")
+lop_norm_path <- paste(out_path, "/model-output/", lop_norm_name, "/", current_ref_date, "-", lop_norm_name, ".csv", sep="")
 readr::write_csv(lop_norm_outputs, lop_norm_path)
 
 
@@ -68,5 +69,6 @@ categorical_ensemble_outputs <- categorical_forecasts |>
 ensemble_name <- "FluSight-ensemble"
 flusight_ensemble_outputs <- median_ensemble_outputs |>
   dplyr::bind_rows(categorical_ensemble_outputs)
-flusight_ensemble_path <- paste(hub_path, "/model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
+flusight_ensemble_path <- paste(out_path, "/model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
 readr::write_csv(flusight_ensemble_outputs, flusight_ensemble_path)
+
