@@ -19,6 +19,7 @@ current_forecasts <- hub_con |>
   dplyr::collect() |>
   as_model_out_tbl() 
 
+current_forecasts <- current_forecasts[current_forecasts$location != 78,]
 
 # QUANTILE ENSEMBLE
 quantile_forecasts <- current_forecasts |>
@@ -42,11 +43,15 @@ median_ensemble_outputs <- quantile_forecasts |>
 # generate linear pool of quantiles (if desired)
 lop_norm_name <- "FluSight-lop_norm"
 lop_norm_outputs <- quantile_forecasts |>
+  dplyr::mutate(output_type_id=as.numeric(output_type_id)) |>
   hubEnsembles::linear_pool(
-    model_id=lop_norm_name,
+    model_id=lop_norm_name, 
     task_id_cols=task_id_cols
   ) |>
-  dplyr::mutate(value = ifelse(value < 0, 0, value)) |>
+  dplyr::mutate(
+    value = ifelse(value < 0, 0, value), 
+    output_type_id = as.character(output_type_id)
+  ) |>
   dplyr::select(-model_id)
 
 lop_norm_path <- paste(out_path, "/model-output/", lop_norm_name, "/", current_ref_date, "-", lop_norm_name, ".csv", sep="")
@@ -56,8 +61,13 @@ readr::write_csv(lop_norm_outputs, lop_norm_path)
 # PMF ENSEMBLE
 categorical_name <- "FluSight-categorical"
 categorical_forecasts <- current_forecasts |>
-  dplyr::filter(output_type == "pmf") 
-  
+  dplyr::filter(output_type == "pmf") |>
+  dplyr::group_by(reference_date, target, target_end_date, output_type) |> # create appropriate groups for `complete`
+  tidyr::complete(model_id, horizon, location, output_type_id, fill=list(value=0)) |> # add in missing output_type_ids and fill the missing values with zero
+  unique()
+
+#categorical_forecasts <- categorical_forecasts[!(categorical_forecasts$model_id == "SGroup-RandomForest" & categorical_forecasts$location == "US" & categorical_forecasts$horizon == -1 & categorical_forecasts$output_type_id == "stable" & categorical_forecasts$value == 0),]
+
 categorical_ensemble_outputs <- categorical_forecasts |>
   hubEnsembles::simple_ensemble(
     agg_fun="mean", 
@@ -72,4 +82,4 @@ flusight_ensemble_outputs <- median_ensemble_outputs |>
 flusight_ensemble_path <- paste(out_path, "/model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
 readr::write_csv(flusight_ensemble_outputs, flusight_ensemble_path)
 
-readr::write_csv(quantile_forecasts, "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble/model-output/FluSight-ensemble/all_quantile_forecasts.csv")
+#readr::write_csv(quantile_forecasts, "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble/model-output/FluSight-ensemble/all_quantile_forecasts.csv")
