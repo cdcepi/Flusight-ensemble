@@ -82,4 +82,11 @@ flusight_ensemble_outputs <- median_ensemble_outputs |>
 flusight_ensemble_path <- paste(out_path, "/model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
 readr::write_csv(flusight_ensemble_outputs, flusight_ensemble_path)
 
-#readr::write_csv(quantile_forecasts, "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble/model-output/FluSight-ensemble/all_quantile_forecasts.csv")
+
+loc.dat <- read.csv(paste0(hub_path, "/auxiliary-data/locations.csv"))
+quantile_forecasts$location_name <- loc.dat$location_name[match(quantile_forecasts$location, loc.dat$location)]
+quantile_forecasts$location_name <- ifelse(quantile_forecasts$location_name == "US", "National", quantile_forecasts$location_name)
+current_forecasts$location_name <- loc.dat$location_name[match(current_forecasts$location, loc.dat$location)]
+current_forecasts$location_name <- ifelse(current_forecasts$location_name == "US", "National", current_forecasts$location_name)
+# readr::write_csv(quantile_forecasts, "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble/model-output/FluSight-ensemble/all_quantile_forecasts.csv")
+# readr::write_csv(current_forecasts, "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble/model-output/FluSight-ensemble/all_forecasts.csv")
