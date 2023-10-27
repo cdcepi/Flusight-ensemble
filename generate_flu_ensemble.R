@@ -4,6 +4,7 @@ library(readr)
 library(stringr)
 library(hubEnsembles)
 library(hubUtils)
+library(yaml)
 
 current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
 task_id_cols <- c("reference_date", "location", "horizon", "target", "target_end_date")
@@ -18,6 +19,65 @@ current_forecasts <- hub_con |>
   ) |> 
   dplyr::collect() |>
   as_model_out_tbl() 
+
+# if(!file.exists(paste0(out_path, "models-to-include-in-ensemble-", current_ref_date, ".csv"))){
+   file_names = list.files(path = paste0(hub_path, "/model-metadata"))
+   all_metadata = file_names[!(file_names %in% c("FluSight-baseline", "FluSight-ensemble", "FluSight-lop_norm")) &
+                            !grepl(paste0(".md", collapse = "|"), file_names)]# %>%
+
+   
+   
+yml.files <- list.files(paste0(hub_path, "/model-metadata"), pattern = "\\.ya?ml$", full.names = T)
+
+designated_models <- character(0)
+file.names <- character(0)
+
+for (i in yml.files) {
+  
+  file.name <- tools::file_path_sans_ext(basename(i))
+  file.names <- c(file.names, file.name)
+  
+  yml.dat <- yaml.load_file(i)
+  
+  if ("designated_model" %in% names(yml.dat)) {
+    # Extract the value of "designated_model"
+    designated_model_value <- yml.dat$designated_model
+    designated_models <- c(designated_models, designated_model_value)
+  } else {
+    # If "designated_model" doesn't exist in the YAML file, you can set a default value or handle it as needed.
+    designated_models <- c(designated_models, NA)  # For example, setting it to NA.
+  }
+}
+
+# Print the values of "designated_model" for each YAML file
+for (i in seq_along(yml.files)) {
+  cat("File:", yml.files[i], "\n")
+  cat("designated_model:", designated_models[[i]], "\n")
+  cat("\n")
+  
+}
+
+eligible_models <- data.frame(Model = file.names, Designated_Model = designated_models)
+
+# 
+#     lapply(., read.delim)
+#   include <- c()
+#   for(i in 1:length(all_metadata)){
+#     
+#     metadata = all_metadata[[i]]
+#     
+#     # this checks to see that this week's file is in the model directory and
+#     # that it is a designated primary, secondary, or proposed model in the metadata
+#     if(file.exists(paste0(hub_path, "/data-forecasts/", all_models[i], 
+#                           "/", current_ref_date, "-", all_models[i], ".csv")) &
+#        (colSums("team_model_designation: primary" == metadata) +
+#         colSums("team_model_designation: proposed" == metadata) +
+#         colSums("team_model_designation: secondary" == metadata) > 0)){
+#       include = c(include, all_models[i])
+#     }
+#   }
+#   write.csv(data.frame(model = include),paste0(out_path, "models-to-include-in-ensemble-", current_ref_date, ".csv"))
+# }
 
 current_forecasts <- current_forecasts[current_forecasts$location != 78,]
 
