@@ -6,7 +6,7 @@ library(hubEnsembles)
 library(hubUtils)
 library(yaml)
 
-current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
+current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(15)
 task_id_cols <- c("reference_date", "location", "horizon", "target", "target_end_date")
   
 out_path <- "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble"
@@ -57,8 +57,12 @@ for (i in seq_along(yml.files)) {
   
 }
 
-eligible_models <- data.frame(Model = file.names, Designated_Model = designated_models)
+eligible_models <- data.frame(Model = file.names, Designated_Model = designated_models) %>% filter(Designated_Model == T)
+write.csv(data.frame(model = include),paste0(out_path, "models-to-include-in-ensemble-", current_ref_date, ".csv"))
 
+eligible_models = read.csv(paste0(out_path, "models-to-include-in-ensemble-", current_ref_date, ".csv"),
+                           header = TRUE)
+models = as.character(eligible_models$Model)
 # 
 #     lapply(., read.delim)
 #   include <- c()
@@ -78,7 +82,7 @@ eligible_models <- data.frame(Model = file.names, Designated_Model = designated_
 #   }
 #   write.csv(data.frame(model = include),paste0(out_path, "models-to-include-in-ensemble-", current_ref_date, ".csv"))
 # }
-
+current_forecasts <- current_forecasts[current_forecasts$model_id %in% models,]
 current_forecasts <- current_forecasts[current_forecasts$location != 78,]
 
 # QUANTILE ENSEMBLE
