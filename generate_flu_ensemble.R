@@ -6,11 +6,13 @@ library(hubEnsembles)
 library(hubUtils)
 library(yaml)
 
+userid <- "rpe5"
+
 current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
 task_id_cols <- c("reference_date", "location", "horizon", "target", "target_end_date")
   
-out_path <- "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble"
-hub_path <- "C:/Users/rpe5/Desktop/GitHub/FluSight-forecast-hub"
+out_path <- paste0("C:/Users/",userid,"/Desktop/GitHub/Flusight-ensemble")
+hub_path <- paste0("C:/Users/",userid,"/Desktop/GitHub/FluSight-forecast-hub")
 hub_con <- connect_hub(hub_path) 
 current_forecasts <- hub_con |>
   dplyr::filter(
@@ -58,7 +60,7 @@ for (i in seq_along(yml.files)) {
 }
 
 eligible_models <- data.frame(Model = file.names, Designated_Model = designated_models) %>% filter(Designated_Model == T)
-write.csv(data.frame(model = include),paste0(out_path, "models-to-include-in-ensemble-", current_ref_date, ".csv"))
+write.csv(eligible_models ,paste0(out_path, "models-to-include-in-ensemble-", current_ref_date, ".csv"))
 
 eligible_models = read.csv(paste0(out_path, "models-to-include-in-ensemble-", current_ref_date, ".csv"),
                            header = TRUE)
@@ -152,5 +154,5 @@ quantile_forecasts$location_name <- loc.dat$location_name[match(quantile_forecas
 quantile_forecasts$location_name <- ifelse(quantile_forecasts$location_name == "US", "National", quantile_forecasts$location_name)
 current_forecasts$location_name <- loc.dat$location_name[match(current_forecasts$location, loc.dat$location)]
 current_forecasts$location_name <- ifelse(current_forecasts$location_name == "US", "National", current_forecasts$location_name)
-# readr::write_csv(quantile_forecasts, "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble/model-output/FluSight-ensemble/all_quantile_forecasts.csv")
-# readr::write_csv(current_forecasts, "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble/model-output/FluSight-ensemble/all_forecasts.csv")
+ # readr::write_csv(quantile_forecasts, "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble/model-output/FluSight-ensemble/all_quantile_forecasts.csv")
+ # readr::write_csv(current_forecasts, "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble/model-output/FluSight-ensemble/all_forecasts.csv")
