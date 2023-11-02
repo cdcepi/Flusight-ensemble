@@ -60,9 +60,9 @@ for (i in seq_along(yml.files)) {
 }
 
 eligible_models <- data.frame(Model = file.names, Designated_Model = designated_models) %>% filter(Designated_Model == T)
-write.csv(eligible_models ,paste0(out_path, "models-to-include-in-ensemble-", current_ref_date, ".csv"))
+write.csv(eligible_models ,paste0(out_path, "/models-to-include-in-ensemble-", current_ref_date, ".csv"))
 
-eligible_models = read.csv(paste0(out_path, "models-to-include-in-ensemble-", current_ref_date, ".csv"),
+eligible_models = read.csv(paste0(out_path, "/models-to-include-in-ensemble-", current_ref_date, ".csv"),
                            header = TRUE)
 models = as.character(eligible_models$Model)
 # 
