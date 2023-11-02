@@ -6,7 +6,7 @@ library(hubEnsembles)
 library(hubUtils)
 library(yaml)
 
-current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(15)
+current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
 task_id_cols <- c("reference_date", "location", "horizon", "target", "target_end_date")
   
 out_path <- "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble"
