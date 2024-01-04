@@ -129,14 +129,14 @@ categorical_name <- "FluSight-categorical"
 categorical_forecasts <- current_forecasts |>
   dplyr::filter(output_type == "pmf") |>
   dplyr::group_by(reference_date, target, target_end_date, output_type) |> # create appropriate groups for `complete`
-  tidyr::complete(model_id, horizon, location, output_type_id, fill=list(value=0)) |> # add in missing output_type_ids and fill the missing values with zero
+  tidyr::complete(model_id, horizon, location, output_type_id, fill=list(value=NA)) |> # add in missing output_type_ids and fill the missing values with zero
   unique()
 
 #categorical_forecasts <- categorical_forecasts[!(categorical_forecasts$model_id == "SGroup-RandomForest" & categorical_forecasts$location == "US" & categorical_forecasts$horizon == -1 & categorical_forecasts$output_type_id == "stable" & categorical_forecasts$value == 0),]
-
 categorical_ensemble_outputs <- categorical_forecasts |>
   hubEnsembles::simple_ensemble(
     agg_fun="mean", 
+    agg_args = list(na.rm = T),
     model_id=categorical_name, 
     task_id_cols=task_id_cols
   ) |>
