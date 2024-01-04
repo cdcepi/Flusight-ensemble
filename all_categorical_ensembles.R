@@ -144,8 +144,12 @@ for (k in weeks.to.eval) {
   ensemble_name <- "FluSight-ensemble"
   flusight_ensemble_outputs <- median_ensemble_outputs |>
     dplyr::bind_rows(categorical_ensemble_outputs)
-  # flusight_ensemble_path <- paste(out_path, "/model-output/", ensemble_name, "/", k, "-", ensemble_name, ".csv", sep="") 
-  # readr::write_csv(flusight_ensemble_outputs, flusight_ensemble_path)
+   flusight_ensemble_path <- paste(out_path, "/model-output/", ensemble_name, "/", k, "-", ensemble_name, ".csv", sep="") 
+   readr::write_csv(flusight_ensemble_outputs, flusight_ensemble_path)
   # 
   all_out <- rbind(all_out, flusight_ensemble_outputs) %>% unique()
 }
+
+dat <- all_out %>% filter(output_type == "pmf") %>% 
+  group_by(reference_date, location, horizon, target_end_date) %>% 
+  summarise(TOT = sum(value)) %>% unique()
