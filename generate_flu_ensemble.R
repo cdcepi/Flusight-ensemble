@@ -6,13 +6,12 @@ library(hubEnsembles)
 library(hubUtils)
 library(yaml)
 
-userid <- Sys.info()["user"]
 
 current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
 task_id_cols <- c("reference_date", "location", "horizon", "target", "target_end_date")
   
-out_path <- paste0("C:/Users/",userid,"/Desktop/GitHub/Flusight-ensemble")
-hub_path <- paste0("C:/Users/",userid,"/Desktop/GitHub/FluSight-forecast-hub")
+out_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-ensemble")
+hub_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/FluSight-forecast-hub")
 hub_con <- connect_hub(hub_path) 
 current_forecasts <- hub_con |>
   dplyr::filter(
