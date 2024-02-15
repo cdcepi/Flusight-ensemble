@@ -87,11 +87,11 @@ output_df <- get_pmf_forecasts_from_quantile(
   target_name="wk flu hosp rate change"
 )
 
-output_pmf <- output_df %>% filter(output_type == "pmf") %>% mutate(model_id = "FluSight-ens_q_cat")
+output_pmf <- output_df %>% filter(output_type == "pmf") %>% select(-model_id)
 #FluSight-ens_q_cat
 ens_dates <- output_pmf %>% {unique(.$reference_date)}
 
-write.csv(output_pmf, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-q_ens_cat/", ens_dates,"-FluSight-ens_q_cat.csv"), row.names = FALSE)
+write.csv(output_pmf, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-q_ens_cat/", ens_dates,"-FluSight-q_ens_cat.csv"), row.names = FALSE)
 
 baseline_output <- get_pmf_forecasts_from_quantile(
   quantile_forecasts = flusight_baseline, locations_df = location_data, truth_df = target_data,
@@ -106,7 +106,7 @@ baseline_output <- get_pmf_forecasts_from_quantile(
   target_name="wk flu hosp rate change"
 )
 
-baseline_df <- baseline_output %>% filter(output_type == "pmf") %>% mutate(model_id = "FluSight-baseline_cat")
+baseline_df <- baseline_output %>% filter(output_type == "pmf") %>% select(-model_id)
 
 ens_dates <- baseline_df %>% {unique(.$reference_date)}
 
