@@ -109,17 +109,7 @@ get_pmf_forecasts_from_quantile <- function(quantile_forecasts, locations_df, tr
     dplyr::rename(reference_date=date, target=target_variable) %>%
     dplyr::mutate(cdf_crit0=1, .before=cdf_crit1)
   
-  # exp_forecast[[paste0("cdf_crit", num_cat)]] <- exp_forecast[[paste0("crit", num_cat)]] <- 0
-  # cdf_crit_sum <- 0
-  # for (i in 1:(num_cat)) {
-  #   if (cdf_crit_sum < 1) {
-  #     exp_forecast[[categories[i]]] <- exp_forecast[[paste0("cdf_crit", i-1)]] - ifelse(exp_forecast[[paste0("crit", i)]] > 0, exp_forecast[[paste0("cdf_crit", i)]], 0)
-  #   } else {
-  #     exp_forecast[[categories[i]]] <- 0
-  #   }
-  #   cdf_crit_sum <- cdf_crit_sum + mean(exp_forecast[[categories[i]]])
-  # }
-  
+  # update from Li
   exp_forecast[[paste0("cdf_crit", num_cat)]] <-
     exp_forecast[[paste0("crit", num_cat)]] <- 0
   exp_forecast[["cdf_crit_sum"]] <- 0
