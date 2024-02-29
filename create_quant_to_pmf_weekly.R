@@ -39,7 +39,7 @@ library(tidyverse)
 
 library(gridExtra)
 
-
+select <- dplyr::select
 
 # set working directory
 work_dir <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/FluSight-ensemble")
@@ -91,7 +91,7 @@ output_pmf <- output_df %>% filter(output_type == "pmf") %>% select(-model_id)
 #FluSight-ens_q_cat
 ens_dates <- output_pmf %>% {unique(.$reference_date)}
 
-write.csv(output_pmf, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-q_ens_cat/", ens_dates,"-FluSight-q_ens_cat.csv"), row.names = FALSE)
+write.csv(output_pmf, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-ens_q_cat/", ens_dates,"-FluSight-ens_q_cat.csv"), row.names = FALSE)
 
 baseline_output <- get_pmf_forecasts_from_quantile(
   quantile_forecasts = flusight_baseline, locations_df = location_data, truth_df = target_data,
