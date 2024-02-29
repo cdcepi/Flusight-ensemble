@@ -10,11 +10,9 @@ library(reshape2)
 library(tidyverse)
 library(gridExtra)
 
-<<<<<<< HEAD
+
 select <- dplyr::select
 
-=======
->>>>>>> b9ca540caecf0ae287242af9c0a64b4dccf5e266
 # set working directory
 # work_dir <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/FluSight-ensemble")
 # setwd(work_dir)
@@ -56,11 +54,9 @@ ens_pmf <- get_pmf_forecasts_from_quantile(
 
 ens_dates <- unique(ens_pmf$reference_date)
 
-<<<<<<< HEAD
+
 write.csv(output_pmf, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-ens_q_cat/", ens_dates,"-FluSight-ens_q_cat.csv"), row.names = FALSE)
-=======
- write.csv(ens_pmf, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-ens_q_cat/", ens_dates,"-FluSight-ens_q_cat.csv"), row.names = FALSE)
->>>>>>> b9ca540caecf0ae287242af9c0a64b4dccf5e266
+
 
  baseline_df <- get_pmf_forecasts_from_quantile(
   quantile_forecasts = flusight_baseline, 
