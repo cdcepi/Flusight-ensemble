@@ -1,9 +1,15 @@
+#remotes::install_github("Infectious-Disease-Modeling-Hubs/hubUtils")
+#remotes::install_github("Infectious-Disease-Modeling-Hubs/hubAdmin")
+#remotes::install_github("Infectious-Disease-Modeling-Hubs/hubData")
+
 library(tidyverse)
 library(lubridate)
 library(readr)
 library(stringr)
 library(hubEnsembles)
 library(hubUtils)
+library(hubData)
+library(hubAdmin)
 library(yaml)
 
 
