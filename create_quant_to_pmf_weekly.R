@@ -39,10 +39,7 @@ library(tidyverse)
 
 library(gridExtra)
 
-<<<<<<< HEAD
 
-=======
->>>>>>> parent of 880729e (Delete get_pmf_forecasts_from_quantile.R)
 select <- dplyr::select
 
 # set working directory
@@ -95,13 +92,10 @@ output_pmf <- output_df %>% filter(output_type == "pmf") %>% select(-model_id)
 #FluSight-ens_q_cat
 ens_dates <- output_pmf %>% {unique(.$reference_date)}
 
-<<<<<<< HEAD
 
-write.csv(output_pmf, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-ens_q_cat/", ens_dates,"-FluSight-ens_q_cat.csv"), row.names = FALSE)
 
-=======
-write.csv(output_pmf, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-ens_q_cat/", ens_dates,"-FluSight-ens_q_cat.csv"), row.names = FALSE)
->>>>>>> parent of 880729e (Delete get_pmf_forecasts_from_quantile.R)
+# write.csv(output_pmf, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-ens_q_cat/", ens_dates,"-FluSight-ens_q_cat.csv"), row.names = FALSE)
+# 
 
 baseline_output <- get_pmf_forecasts_from_quantile(
   quantile_forecasts = flusight_baseline, locations_df = location_data, truth_df = target_data,
@@ -120,4 +114,4 @@ baseline_df <- baseline_output %>% filter(output_type == "pmf") %>% select(-mode
 
 ens_dates <- baseline_df %>% {unique(.$reference_date)}
 
-write.csv(baseline_df, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-baseline_cat/", ens_dates ,"-FluSight-baseline_cat"), row.names = FALSE)
+# write.csv(baseline_df, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-baseline_cat/", ens_dates ,"-FluSight-baseline_cat"), row.names = FALSE)
