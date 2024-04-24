@@ -5,6 +5,8 @@
 
 #remotes::install_github("Infectious-Disease-Modeling-Hubs/hubUtils")
 library(hubUtils)
+library(hubAdmin)
+library(hubData)
 
 # zeallot perform multiple unpacking, and destructing assignment in R.  
 # needed to install disfromq
@@ -65,6 +67,8 @@ flusight <- connect_hub(paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/F
 cat_data <- flusight %>% filter(output_type == "quantile", horizon != -1) %>%  dplyr::collect() %>%
   as_model_out_tbl()
 
+cat_data <- cat_data %>% filter(reference_date <= as.Date("2024-04-13"))
+
 flusight_ensemble <- cat_data %>% filter(model_id == "FluSight-ensemble", reference_date == max(reference_date)) 
 flusight_baseline <- cat_data %>% filter(model_id == "FluSight-baseline", reference_date == max(reference_date)) 
 
@@ -73,7 +77,7 @@ location_data <- readr::read_csv(file = "https://raw.githubusercontent.com/cdcep
 target_data <- readr::read_csv(file = "https://raw.githubusercontent.com/cdcepi/FluSight-forecast-hub/main/target-data/target-hospital-admissions.csv") %>% 
   select(-c(`...1`)) %>% rename(time_value = date)%>%
   dplyr::inner_join(location_data,
-                    by = join_by("location_name" == "location_name", "location" == "location"))
+                    by = join_by("location_name" == "location_name", "location" == "location")) %>% filter(time_value <= as.Date("2024-04-13"))
 
 output_df <- get_pmf_forecasts_from_quantile(
   quantile_forecasts = flusight_ensemble, locations_df = location_data, truth_df = target_data,
@@ -94,7 +98,7 @@ ens_dates <- output_pmf %>% {unique(.$reference_date)}
 
 
 
-# write.csv(output_pmf, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-ens_q_cat/", ens_dates,"-FluSight-ens_q_cat.csv"), row.names = FALSE)
+ write.csv(output_pmf, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-ens_q_cat/", ens_dates,"-FluSight-ens_q_cat.csv"), row.names = FALSE)
 # 
 
 baseline_output <- get_pmf_forecasts_from_quantile(
@@ -114,4 +118,5 @@ baseline_df <- baseline_output %>% filter(output_type == "pmf") %>% select(-mode
 
 ens_dates <- baseline_df %>% {unique(.$reference_date)}
 
-# write.csv(baseline_df, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-baseline_cat/", ens_dates ,"-FluSight-baseline_cat"), row.names = FALSE)
+ write.csv(baseline_df, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-baseline_cat/", ens_dates ,"-FluSight-baseline_cat"), row.names = FALSE)
+baseline_output %>% filter(output_type == "pmf") %>% group_by(location, horizon) %>% summarize(t.sum = sum(value)) -> check
