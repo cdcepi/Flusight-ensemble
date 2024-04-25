@@ -67,7 +67,7 @@ flusight <- connect_hub(paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/F
 cat_data <- flusight %>% filter(output_type == "quantile", horizon != -1) %>%  dplyr::collect() %>%
   as_model_out_tbl()
 
-cat_data <- cat_data %>% filter(reference_date <= as.Date("2024-04-13"))
+cat_data <- cat_data %>% filter(reference_date <= as.Date("2024-04-27"))
 
 flusight_ensemble <- cat_data %>% filter(model_id == "FluSight-ensemble", reference_date == max(reference_date)) 
 flusight_baseline <- cat_data %>% filter(model_id == "FluSight-baseline", reference_date == max(reference_date)) 
@@ -77,7 +77,7 @@ location_data <- readr::read_csv(file = "https://raw.githubusercontent.com/cdcep
 target_data <- readr::read_csv(file = "https://raw.githubusercontent.com/cdcepi/FluSight-forecast-hub/main/target-data/target-hospital-admissions.csv") %>% 
   select(-c(`...1`)) %>% rename(time_value = date)%>%
   dplyr::inner_join(location_data,
-                    by = join_by("location_name" == "location_name", "location" == "location")) %>% filter(time_value <= as.Date("2024-04-13"))
+                    by = join_by("location_name" == "location_name", "location" == "location")) %>% filter(time_value <= as.Date("2024-04-27"))
 
 output_df <- get_pmf_forecasts_from_quantile(
   quantile_forecasts = flusight_ensemble, locations_df = location_data, truth_df = target_data,
