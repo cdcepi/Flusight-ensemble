@@ -118,5 +118,5 @@ baseline_df <- baseline_output %>% filter(output_type == "pmf") %>% select(-mode
 
 ens_dates <- baseline_df %>% {unique(.$reference_date)}
 
- write.csv(baseline_df, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-baseline_cat/", ens_dates ,"-FluSight-baseline_cat"), row.names = FALSE)
+ write.csv(baseline_df, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-baseline_cat/", ens_dates ,"-FluSight-baseline_cat.csv"), row.names = FALSE)
 baseline_output %>% filter(output_type == "pmf") %>% group_by(location, horizon) %>% summarize(t.sum = sum(value)) -> check
