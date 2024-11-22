@@ -51,15 +51,11 @@ setwd(work_dir)
 # source get_pmf_forecasts_from_quantile.R - will eventually be implemented in idforecastutils package
 source("get_pmf_forecasts_from_quantile.R")
 
-# Current category definitions 2023-2024 (as of 2023-11-04 update)
+# Current category definitions 2024-2025 (as of 2023-11-04 update)
 h_vec <- 0:3 
-multiplier_matrix <- matrix(c(c(2, 3, 4, 5), c(1, 1, 2, 2.5), c(-1, -1, -2, -2.5), c(-2, -3, -4, -5)), ncol=4)
+multiplier_matrix <- matrix(c(c(1.7, 3, 4, 5), c(0.3, 0.5, 0.7, 1), c(-0.3, -0.5, -0.7, -1), c(-1.7, -3, -4, -5)), ncol=4)
 category_rule_matrix <- matrix(c(rep(10, 4), rep(10, 4), rep(-10, 4), rep(-10, 4)), ncol=4)
 
-# # Initial category definitions 2023-2024 (before 2023-11-04 update)
-# h_vec <- -1:3 
-# multiplier_matrix <- matrix(c(c(2, 3, 4, 5, 5), c(1, 1, 2, 2.5, 2.5), c(-1, -1, -2, -2.5, -2.5), c(-2, -3, -4, -5, -5)), ncol=num_cat-1)
-# category_rule_matrix <- matrix(c(rep(10, 5), rep(10, 5), rep(-10, 5), rep(-10, 5)), ncol=num_cat-1)
 
 # hub function - specify model and get all of the data for that model 
 flusight <- connect_hub(paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-forecast-hub"))
@@ -67,17 +63,17 @@ flusight <- connect_hub(paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/F
 cat_data <- flusight %>% filter(output_type == "quantile", horizon != -1) %>%  dplyr::collect() %>%
   as_model_out_tbl()
 
-cat_data <- cat_data %>% filter(reference_date <= as.Date("2024-04-27"))
+cat_data <- cat_data %>% filter(reference_date >= as.Date("2024-11-03")&reference_date <= as.Date("2025-05-31"))
 
 flusight_ensemble <- cat_data %>% filter(model_id == "FluSight-ensemble", reference_date == max(reference_date)) 
 flusight_baseline <- cat_data %>% filter(model_id == "FluSight-baseline", reference_date == max(reference_date)) 
 
-location_data <- readr::read_csv(file = "https://raw.githubusercontent.com/cdcepi/FluSight-forecast-hub/main/auxiliary-data/locations.csv") %>% select(-`...5`) %>% rename(geo_value = abbreviation) %>% mutate(geo_value = tolower(geo_value))
+location_data <- readr::read_csv(file = "https://raw.githubusercontent.com/cdcepi/FluSight-forecast-hub/main/auxiliary-data/locations.csv") %>% rename(geo_value = abbreviation) %>% mutate(geo_value = tolower(geo_value))
 
 target_data <- readr::read_csv(file = "https://raw.githubusercontent.com/cdcepi/FluSight-forecast-hub/main/target-data/target-hospital-admissions.csv") %>% 
-  select(-c(`...1`)) %>% rename(time_value = date)%>%
+  rename(time_value = date)%>%
   dplyr::inner_join(location_data,
-                    by = join_by("location_name" == "location_name", "location" == "location")) %>% filter(time_value <= as.Date("2024-04-27"))
+                    by = join_by("location_name" == "location_name", "location" == "location")) %>% filter(time_value <= as.Date("2025-05-31"))
 
 output_df <- get_pmf_forecasts_from_quantile(
   quantile_forecasts = flusight_ensemble, locations_df = location_data, truth_df = target_data,
