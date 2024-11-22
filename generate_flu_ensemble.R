@@ -70,25 +70,7 @@ write.csv(eligible_models ,paste0(out_path, "/Model Inclusion/models-to-include-
 eligible_models = read.csv(paste0(out_path, "/Model Inclusion/models-to-include-in-ensemble-", current_ref_date, ".csv"),
                            header = TRUE)
 models = as.character(eligible_models$Model)
-# 
-#     lapply(., read.delim)
-#   include <- c()
-#   for(i in 1:length(all_metadata)){
-#     
-#     metadata = all_metadata[[i]]
-#     
-#     # this checks to see that this week's file is in the model directory and
-#     # that it is a designated primary, secondary, or proposed model in the metadata
-#     if(file.exists(paste0(hub_path, "/data-forecasts/", all_models[i], 
-#                           "/", current_ref_date, "-", all_models[i], ".csv")) &
-#        (colSums("team_model_designation: primary" == metadata) +
-#         colSums("team_model_designation: proposed" == metadata) +
-#         colSums("team_model_designation: secondary" == metadata) > 0)){
-#       include = c(include, all_models[i])
-#     }
-#   }
-#   write.csv(data.frame(model = include),paste0(out_path, "models-to-include-in-ensemble-", current_ref_date, ".csv"))
-# }
+
 current_forecasts <- current_forecasts[current_forecasts$model_id %in% models,]
 current_forecasts <- current_forecasts[current_forecasts$location != 78,]
 
@@ -117,8 +99,6 @@ median_ensemble_outputs <- quantile_forecasts |>
   dplyr::mutate(value = ifelse(value < 0, 0, value)) |>
   dplyr::select(-model_id)
 
-# median_ensemble_path <- paste(hub_path, "/model-output/", median_name, "/", current_ref_date, "-", median_name, ".csv", sep="") 
-# readr::write_csv(median_ensemble_outputs, median_ensemble_path)
 
 # QUANTILE PEAK INTENSITY ENSEMBLE
 quantile_intensity_forecasts <- current_forecasts |>
@@ -240,5 +220,3 @@ quantile_forecasts$location_name <- loc.dat$location_name[match(quantile_forecas
 quantile_forecasts$location_name <- ifelse(quantile_forecasts$location_name == "US", "National", quantile_forecasts$location_name)
 current_forecasts$location_name <- loc.dat$location_name[match(current_forecasts$location, loc.dat$location)]
 current_forecasts$location_name <- ifelse(current_forecasts$location_name == "US", "National", current_forecasts$location_name)
- # readr::write_csv(quantile_forecasts, "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble/model-output/FluSight-ensemble/all_quantile_forecasts.csv")
- # readr::write_csv(current_forecasts, "C:/Users/rpe5/Desktop/GitHub/Flusight-ensemble/model-output/FluSight-ensemble/all_forecasts.csv")
