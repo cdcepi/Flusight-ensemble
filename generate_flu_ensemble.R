@@ -13,7 +13,7 @@ library(hubAdmin)
 library(yaml)
 
 
-current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
+current_ref_date <- as.Date("2024-12-07")#lubridate::ceiling_date(Sys.Date(), "week") - days(1)
 task_id_cols <- c("reference_date", "location", "horizon", "target", "target_end_date")
   
 out_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-ensemble")
@@ -97,7 +97,8 @@ median_ensemble_outputs <- quantile_forecasts |>
     ),
   ) |>
   dplyr::mutate(value = ifelse(value < 0, 0, value)) |>
-  dplyr::select(-model_id)
+  dplyr::select(-model_id) |> 
+  filter(horizon != -1)
 
 
 # QUANTILE PEAK INTENSITY ENSEMBLE
@@ -142,7 +143,8 @@ lop_norm_outputs <- quantile_forecasts |>
       floor(value),    # Round down if quantile is below 0.5
       ceiling(value)   # Round up if quantile is 0.5 or above
   )) |>
-  dplyr::select(-model_id)
+  dplyr::select(-model_id) |>
+  filter(horizon != -1)
 
 # geneate linear pool of intensity target quantiles
 lop_norm_intensity_name <- "FluSight-lop_norm-Intensity"
