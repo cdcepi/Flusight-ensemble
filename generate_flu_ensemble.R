@@ -13,7 +13,7 @@ library(hubAdmin)
 library(yaml)
 
 
-current_ref_date <- as.Date("2024-12-07")#lubridate::ceiling_date(Sys.Date(), "week") - days(1)
+current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
 task_id_cols <- c("reference_date", "location", "horizon", "target", "target_end_date")
   
 out_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-ensemble")
