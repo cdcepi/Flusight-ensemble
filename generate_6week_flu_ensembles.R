@@ -381,16 +381,21 @@ current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
   
   #Change to submission format
   
-  median_weight_state6<-median_weight_state6%>%dplyr::select(model_id,reference_date,location,horizon,target_variable,target_end_date,
-                                                                                         output_type,output_type_id,value)
-  mean_weight_state6<-mean_weight_state6%>%dplyr::select(model_id,reference_date,location,horizon,target_variable,target_end_date,
-                                                      output_type,output_type_id,value)
+  median_weight_state6<-median_weight_state6%>%dplyr::select(reference_date,location,horizon,target_variable,target_end_date,
+                                                                                         output_type,output_type_id,value) %>% 
+    rename(target = target_variable)
+  mean_weight_state6<-mean_weight_state6%>%dplyr::select(reference_date,location,horizon,target_variable,target_end_date,
+                                                      output_type,output_type_id,value) %>% 
+    rename(target = target_variable)
   
-  flusight_ensemble_path <- paste(out_path, "/model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
+
+  out_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-ensemble")
   ensemble_name <- "FluSight-trained_med"
-  readr::write_csv(median_weight_state6, flusight_ensemble_path, row.names = FALSE,quote = FALSE)
+  flusight_ensemble_path <- paste(out_path, "/model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
+  readr::write_csv(median_weight_state6, flusight_ensemble_path)
   ensemble_name<-"FluSight-trained_mean"
-  readr::write_csv(mean_weight_state6, flusight_ensemble_path, row.names = FALSE,quote = FALSE)
+  flusight_ensemble_path <- paste(out_path, "/model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
+  readr::write_csv(mean_weight_state6, flusight_ensemble_path)
   
   
   
