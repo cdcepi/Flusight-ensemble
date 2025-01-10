@@ -137,7 +137,7 @@ current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
   #Also adding in the truth data
 
   count_state6<-forecasts_6week_state%>%group_by( model)%>%
-    summarise(n=n())%>%filter(n==max(n)|model=="FluSight-baseline")
+    dplyr::summarise(n=n())%>%filter(n==max(n)|model=="FluSight-baseline")
 
   #6 week burn
 
@@ -383,10 +383,10 @@ current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
   
   median_weight_state6<-median_weight_state6%>%dplyr::select(reference_date,location,horizon,target_variable,target_end_date,
                                                                                          output_type,output_type_id,value) %>% 
-    rename(target = target_variable)
+    dplyr::rename(target=target_variable)
   mean_weight_state6<-mean_weight_state6%>%dplyr::select(reference_date,location,horizon,target_variable,target_end_date,
                                                       output_type,output_type_id,value) %>% 
-    rename(target = target_variable)
+    dplyr::rename(target = target_variable)
   
 
   out_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-ensemble")

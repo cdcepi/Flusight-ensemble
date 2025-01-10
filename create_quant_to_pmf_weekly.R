@@ -68,10 +68,10 @@ cat_data <- cat_data %>% filter(reference_date >= as.Date("2024-11-03")&referenc
 flusight_ensemble <- cat_data %>% filter(model_id == "FluSight-ensemble", reference_date == max(reference_date)) 
 flusight_baseline <- cat_data %>% filter(model_id == "FluSight-baseline", reference_date == max(reference_date)) 
 
-location_data <- readr::read_csv(file = "https://raw.githubusercontent.com/cdcepi/FluSight-forecast-hub/main/auxiliary-data/locations.csv") %>% rename(geo_value = abbreviation) %>% mutate(geo_value = tolower(geo_value))
+location_data <- readr::read_csv(file = "https://raw.githubusercontent.com/cdcepi/FluSight-forecast-hub/main/auxiliary-data/locations.csv") %>% dplyr::rename(geo_value = abbreviation) %>% mutate(geo_value = tolower(geo_value))
 
 target_data <- readr::read_csv(file = "https://raw.githubusercontent.com/cdcepi/FluSight-forecast-hub/main/target-data/target-hospital-admissions.csv") %>% 
-  rename(time_value = date)%>%
+  dplyr::rename(time_value = date)%>%
   dplyr::inner_join(location_data,
                     by = join_by("location_name" == "location_name", "location" == "location")) %>% filter(time_value <= as.Date("2025-05-31"))
 
