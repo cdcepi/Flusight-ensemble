@@ -89,19 +89,54 @@ get_pmf_forecasts_from_quantile <- function(quantile_forecasts, locations_df, tr
     dplyr::select(-target, -output_type,-output_type_id,-value)
   
   # Calculate cdf category boundary values
-  for (i in 1:(num_cat-1)) {
-    criteria_df_filtered[["crit_current"]] <- criteria_df_filtered[[paste0("crit", i, sep="")]] 
-    train_temp <- criteria_df_filtered %>%
-      dplyr::group_by(model_id, date, location, horizon, target, target_end_date) %>%
-      dplyr::summarize(
-        cdf_crit_current = distfromq::make_p_fn(
-          ps = output_type_id,
-          qs = value)(unique(crit_current), log = FALSE)
-      ) %>%
-      dplyr::ungroup() %>%
-      dplyr::select(-c(target, target_end_date))
-    train_forecasts[[paste0("cdf_crit", i)]] <- train_temp[["cdf_crit_current"]]
-  }
+  
+##This was the original code, made adjustments to run each location individually
+  # for (i in 1:(num_cat-1)) {
+  #   criteria_df_filtered[["crit_current"]] <- criteria_df_filtered[[paste0("crit", i, sep="")]] 
+  #   train_temp <- criteria_df_filtered %>%
+  #     dplyr::group_by(model_id, date, location, horizon, target, target_end_date) %>%
+  #     dplyr::summarize(
+  #       cdf_crit_current = distfromq::make_p_fn(
+  #         ps = output_type_id,
+  #         qs = value)(unique(crit_current), log = FALSE)
+  #     ) %>%
+  #     dplyr::ungroup() %>%
+  #     dplyr::select(-c(target, target_end_date))
+  #   train_forecasts[[paste0("cdf_crit", i)]] <- train_temp[["cdf_crit_current"]]
+  # }
+
+  
+##Updated code 2/6/2025
+  all_train_temp = list()
+  counter = 1
+  for(j in unique(criteria_df_filtered$location)){
+    sub <- criteria_df_filtered %>% filter(location== j)
+    for (i in 1:(num_cat-1)) {
+      sub[["crit_current"]] <- sub[[paste0("crit", i, sep="")]] 
+      train_temp <- sub %>%
+        dplyr::group_by(model_id, date, location, horizon, target, target_end_date) %>%
+        dplyr::summarize(
+          cdf_crit_current = distfromq::make_p_fn(
+            ps = output_type_id,
+            qs = value)(unique(crit_current), log = FALSE)
+        ) %>%
+        dplyr::ungroup() %>%
+        dplyr::select(-c(target, target_end_date))
+      train_temp$which_i = i
+      train_temp$which_j = j
+      counter = counter + 1
+      all_train_temp[[counter]] = train_temp
+      rm(train_temp)
+      
+    }}
+  
+  all_train_temp2 = bind_rows(all_train_temp) %>%
+    pivot_wider(names_from = which_i, values_from = cdf_crit_current)
+  train_forecasts <- left_join(train_forecasts, all_train_temp2) %>% select(-which_j) %>% rename_at(vars(`1`), ~ "cdf_crit1") %>% 
+    rename_at(vars(`2`), ~ "cdf_crit2") %>% 
+    rename_at(vars(`3`), ~ "cdf_crit3") %>% 
+    rename_at(vars(`4`), ~ "cdf_crit4")
+  
   
   #calculate category percentages from cdf criteria, correcting for negative numbers
   exp_forecast <- train_forecasts %>%
