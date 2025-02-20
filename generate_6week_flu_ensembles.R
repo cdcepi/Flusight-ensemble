@@ -38,7 +38,7 @@ current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
   #This the period of time we will use to evaluate performance
   flu_dates_24_25_retro <- as.Date(current_ref_date) - weeks(1:7)
   #needs adjusted to omit the week of 2025-01-25 until it is out of the 6 week period
-  flu_dates_24_25_retro <- flu_dates_24_25_retro[-3]
+  flu_dates_24_25_retro <- flu_dates_24_25_retro[-4]
   
   #Another loop across the training period
   for (i in 1:length(flu_dates_24_25_retro)) {
