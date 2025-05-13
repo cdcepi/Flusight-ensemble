@@ -1,0 +1,65 @@
+name: Create ensembles
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Create Ensembles'
+        required: false
+      publish:
+        description: 'Create ensemble forecasts'
+        type: boolean
+        required: false
+        default: true
+
+permissions:
+    contents: write
+
+jobs:
+  create_ensembles:
+    if: github.repository_owner == 'cdcepi'
+    runs-on: macOS-latest
+    steps:    
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with: 
+          fetch-depth: 0
+      - name: Setup R 
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - name: Install dependencies
+        run: |
+          install.packages("pak", repos = "https://cran.rstudio.com")
+          pak::pkg_install(c(
+            "tidyverse", "lubridate", "readr", "stringr", "yaml",
+            "reshape2", "ggforce", "distfromq", "gridExtra",
+            "zoltr", "plyr"))
+          pak::pkg_install("scoringutils@1.2.2")
+          pak::pkg_install(c(
+            "github::hubverse-org/hubEnsembles",
+            "github::hubverse-org/hubUtils",
+            "github::hubverse-org/hubData",
+            "github::hubverse-org/hubAdmin"))
+        shell: Rscript {0}
+      - name: Clone FluSight forecast hub
+        run: git clone https://github.com/cdcepi/FluSight-forecast-hub.git
+      - name: Generate FluSight-ensemble csv file
+        run:  Rscript generate_flu_ensemble.R
+      - name: Generate 6-week ensemble csv file
+        run:  Rscript generate_6week_flu_ensembles.R
+      - name: Generate PMF forecast csv file
+        run:  Rscript create_quant_to_pmf_weekly.R
+      - name: Commit changes and create PR 🚀
+        if: ${{ inputs.publish || github.event_name == 'schedule' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_DATETIME=$(date +'%Y-%m-%d_%H-%M-%S')
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout main
+          git pull origin main
+          git add .
+          git commit -m "Generate new ensemble forecasts"
+          git push origin main
+        shell: bash
