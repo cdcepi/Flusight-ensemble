@@ -45,8 +45,8 @@ library(gridExtra)
 select <- dplyr::select
 
 # set working directory
-work_dir <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/FluSight-ensemble")
-setwd(work_dir)
+#work_dir <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/FluSight-ensemble")
+#setwd(work_dir)
 
 # source get_pmf_forecasts_from_quantile.R - will eventually be implemented in idforecastutils package
 source("get_pmf_forecasts_from_quantile.R")
@@ -58,7 +58,8 @@ category_rule_matrix <- matrix(c(rep(10, 4), rep(10, 4), rep(-10, 4), rep(-10, 4
 
 
 # hub function - specify model and get all of the data for that model 
-flusight <- connect_hub(paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-forecast-hub"))
+#flusight <- connect_hub(paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-forecast-hub"))
+flusight <- connect_hub("FluSight-forecast-hub")
 
 cat_data <- flusight %>% filter(output_type == "quantile", horizon != -1) %>%  dplyr::collect() %>%
   as_model_out_tbl()
@@ -94,8 +95,10 @@ ens_dates <- output_pmf %>% {unique(.$reference_date)}
 
 
 
- write.csv(output_pmf, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-ens_q_cat/", ens_dates,"-FluSight-ens_q_cat.csv"), row.names = FALSE)
-# 
+ #write.csv(output_pmf, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-ens_q_cat/", ens_dates,"-FluSight-ens_q_cat.csv"), row.names = FALSE)
+write.csv(output_pmf,
+  file.path("model-output", "FluSight-ens_q_cat", paste0(ens_dates, "-FluSight-ens_q_cat.csv")),
+  row.names = FALSE)
 
 baseline_output <- get_pmf_forecasts_from_quantile(
   quantile_forecasts = flusight_baseline, locations_df = location_data, truth_df = target_data,
@@ -114,5 +117,8 @@ baseline_df <- baseline_output %>% filter(output_type == "pmf") %>% select(-mode
 
 ens_dates <- baseline_df %>% {unique(.$reference_date)}
 
- write.csv(baseline_df, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-baseline_cat/", ens_dates ,"-FluSight-baseline_cat.csv"), row.names = FALSE)
+#write.csv(baseline_df, paste0("C://Users/", Sys.info()["user"], "/Desktop/GitHub/FluSight-forecast-hub/model-output/FluSight-baseline_cat/", ens_dates ,"-FluSight-baseline_cat.csv"), row.names = FALSE)
+write.csv(baseline_df,
+  file.path("model-output", "FluSight-baseline_cat", paste0(ens_dates, "-FluSight-baseline_cat.csv")),
+  row.names = FALSE)
 baseline_output %>% filter(output_type == "pmf") %>% group_by(location, horizon) %>% summarize(t.sum = sum(value)) -> check
