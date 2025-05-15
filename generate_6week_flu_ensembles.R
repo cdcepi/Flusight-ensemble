@@ -16,7 +16,8 @@ library(lubridate)
 ####################################################################  Original code
 
 #Need to load the truth data for the period.
-flu_truth_current <- read.csv(paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-forecast-hub/target-data/target-hospital-admissions.csv"))
+#flu_truth_current <- read.csv(paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-forecast-hub/target-data/target-hospital-admissions.csv"))
+flu_truth_current <- read.csv("https://raw.githubusercontent.com/cdcepi/FluSight-forecast-hub/main/target-data/target-hospital-admissions.csv")
 flu_truth_current$target_variable<-'wk inc flu hosp'
 flu_truth_current$model<-'flu-truth'
 
@@ -44,8 +45,9 @@ current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
     #################################################################### End Original code
     ####################################################################  Flusight code
     #Change to location of new data
-    out_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-ensemble/Test")
-    hub_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/FluSight-forecast-hub")
+    #out_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-ensemble/Test")
+    #hub_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/FluSight-forecast-hub")
+    hub_path <- "FluSight-forecast-hub"
     hub_con <- connect_hub(hub_path) 
     forecast_data <- hub_con |>
       dplyr::filter(
@@ -389,13 +391,12 @@ current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
     dplyr::rename(target = target_variable)
   
 
-  out_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-ensemble")
+  #out_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-ensemble")
   ensemble_name <- "FluSight-trained_med"
-  flusight_ensemble_path <- paste(out_path, "/model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
+  flusight_ensemble_path <- paste("model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
   readr::write_csv(median_weight_state6, flusight_ensemble_path)
   ensemble_name<-"FluSight-trained_mean"
-  flusight_ensemble_path <- paste(out_path, "/model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
+  flusight_ensemble_path <- paste("model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
   readr::write_csv(mean_weight_state6, flusight_ensemble_path)
   
-  
-  
+ 
