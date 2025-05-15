@@ -1,6 +1,7 @@
 #remotes::install_github("Infectious-Disease-Modeling-Hubs/hubUtils")
 #remotes::install_github("Infectious-Disease-Modeling-Hubs/hubAdmin")
 #remotes::install_github("Infectious-Disease-Modeling-Hubs/hubData")
+options(error = function() { traceback(2); quit(status = 1) })
 
 library(tidyverse)
 library(lubridate)
@@ -16,8 +17,11 @@ library(yaml)
 current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
 task_id_cols <- c("reference_date", "location", "horizon", "target", "target_end_date")
   
-out_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-ensemble")
-hub_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/FluSight-forecast-hub")
+#out_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-ensemble")
+#hub_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/FluSight-forecast-hub")
+
+#out_path <- "."
+hub_path <- "FluSight-forecast-hub"
 hub_con <- connect_hub(hub_path) 
 current_forecasts <- hub_con |>
   dplyr::filter(
@@ -29,7 +33,8 @@ current_forecasts <- hub_con |>
 
 # if(!file.exists(paste0(out_path, "models-to-include-in-ensemble-", current_ref_date, ".csv"))){
    file_names = list.files(path = paste0(hub_path, "/model-metadata"))
-   all_metadata = file_names[!(file_names %in% c("FluSight-baseline", "FluSight-ensemble", "FluSight-lop_norm")) &
+   all_metadata = file_names[!(file_names %in% c("FluSight-baseline", "FluSight-ensemble", "FluSight-lop_norm", "FluSight-base_seasonal",
+                                                "FluSight-trained_mean", "FluSight-trained_med")) &
                             !grepl(paste0(".md", collapse = "|"), file_names)]# %>%
 
    
@@ -64,14 +69,20 @@ for (i in seq_along(yml.files)) {
   
 }
 
-eligible_models <- data.frame(Model = file.names, Designated_Model = designated_models) %>% filter(Designated_Model == T)
-write.csv(eligible_models ,paste0(out_path, "/Model Inclusion/models-to-include-in-ensemble-", current_ref_date, ".csv"))
+#eligible_models <- data.frame(Model = file.names, Designated_Model = designated_models) %>% filter(Designated_Model == T)
+eligible_models <- data.frame(Model = file.names, Designated_Model = as.logical(designated_models)) %>%
+  dplyr::filter(Designated_Model)
 
-eligible_models = read.csv(paste0(out_path, "/Model Inclusion/models-to-include-in-ensemble-", current_ref_date, ".csv"),
-                           header = TRUE)
-models = as.character(eligible_models$Model)
+file_path <- paste0("Model Inclusion/models-to-include-in-ensemble-", current_ref_date, ".csv")
+write.csv(eligible_models, file_path, row.names = FALSE)
+
+#write.csv(eligible_models ,paste0("Model Inclusion/models-to-include-in-ensemble-", current_ref_date, ".csv"))
+
+#eligible_models = read.csv(paste0("Model Inclusion/models-to-include-in-ensemble-", current_ref_date, ".csv"),header = TRUE)
+models <- as.character(eligible_models$Model)
 
 current_forecasts <- current_forecasts[current_forecasts$model_id %in% models,]
+message("📦 Filtered to ", nrow(current_forecasts), " forecasts after matching eligible models.")
 current_forecasts <- current_forecasts[current_forecasts$location != 78,]
 
 # QUANTILE 1-4 WEEK AHEAD ENSEMBLE
@@ -167,9 +178,8 @@ lop_norm_intensity_outputs <- quantile_intensity_forecasts |>
 # combine linear pool outputs for both quantile targets
 lop_norm_outputs_combined<-dplyr::bind_rows(lop_norm_outputs, lop_norm_intensity_outputs)
 
-lop_norm_path <- paste(out_path, "/model-output/", lop_norm_name, "/", current_ref_date, "-", lop_norm_name, ".csv", sep="")
+lop_norm_path <- paste("model-output/", lop_norm_name, "/", current_ref_date, "-", lop_norm_name, ".csv", sep="")
 readr::write_csv(lop_norm_outputs_combined, lop_norm_path)
-
 
 # PMF CATEGORICAL ENSEMBLE
 categorical_name <- "FluSight-categorical"
@@ -213,7 +223,7 @@ flusight_ensemble_outputs <- median_ensemble_outputs |>
   dplyr::bind_rows(categorical_ensemble_outputs) |>
   dplyr::bind_rows(median_intensity_ensemble_outputs) |>
   dplyr::bind_rows(peak_week_ensemble_outputs)
-flusight_ensemble_path <- paste(out_path, "/model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
+flusight_ensemble_path <- paste("model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
 readr::write_csv(flusight_ensemble_outputs, flusight_ensemble_path)
 
 
