@@ -111,6 +111,24 @@ median_ensemble_outputs <- quantile_forecasts |>
   dplyr::select(-model_id) |> 
   filter(horizon != -1)
 
+# QUANTILE ED VISIT ENSEMBLE
+quantile_ed_visit_forecasts <- current_forecasts |>
+  dplyr::filter(output_type == "quantile") |>
+  dplyr::filter(target == "wk inc flu prop ed visits") |>
+  dplyr::mutate(output_type_id=as.character(as.numeric(output_type_id))) # ensures quantiles treated the same regardless of presence of trailing zeros
+
+# generate median ensemble
+median_ed_visit_name <- "FluSight-ED-Visit-median"
+median_ed_visit_ensemble_outputs <- quantile_ed_visit_forecasts |>
+  hubEnsembles::simple_ensemble(
+    agg_fun="median", 
+    model_id=median_ed_visit_name, 
+    task_id_cols=task_id_cols
+  ) |>
+  dplyr::mutate(value = ifelse(value < 0, 0, value)) |>
+  dplyr::select(-model_id)
+
+
 
 # QUANTILE PEAK INTENSITY ENSEMBLE
 quantile_intensity_forecasts <- current_forecasts |>
@@ -222,7 +240,8 @@ ensemble_name <- "FluSight-ensemble"
 flusight_ensemble_outputs <- median_ensemble_outputs |>
   dplyr::bind_rows(categorical_ensemble_outputs) |>
   dplyr::bind_rows(median_intensity_ensemble_outputs) |>
-  dplyr::bind_rows(peak_week_ensemble_outputs)
+  dplyr::bind_rows(peak_week_ensemble_outputs) |>
+  dplyr::bind_rows(median_ed_visit_ensemble_outputs)
 flusight_ensemble_path <- paste("model-output/", ensemble_name, "/", current_ref_date, "-", ensemble_name, ".csv", sep="") 
 readr::write_csv(flusight_ensemble_outputs, flusight_ensemble_path)
 
