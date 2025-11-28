@@ -65,25 +65,24 @@ flusight <- connect_hub("FluSight-forecast-hub")
 cat_data <- flusight %>% filter(output_type == "quantile", horizon != -1) %>%  dplyr::collect() %>%
   as_model_out_tbl()
 
-cat_data <- cat_data %>% filter(reference_date >= as.Date("2024-11-03")&reference_date <= as.Date("2025-05-31"))
+cat_data <- cat_data %>% filter(reference_date >= as.Date("2025-11-03")&reference_date <= as.Date("2026-05-31"))
 
 #flusight_ensemble <- cat_data %>% filter(model_id == "FluSight-ensemble", reference_date == max(reference_date)) 
 file_path <- file.path("model-output", "FluSight-ensemble", paste0(ref_date, "-FluSight-ensemble.csv"))
 flusight_ensemble <- read_csv(file_path) %>%
   filter(target == "wk inc flu hosp") %>%       
   mutate(model_id = "FluSight-ensemble") 
-flusight_baseline <- cat_data %>% filter(model_id == "FluSight-baseline", reference_date == max(reference_date)) 
+flusight_baseline <- cat_data %>% filter(model_id == "FluSight-baseline", reference_date == max(reference_date)) %>% filter(target=="wk inc flu hosp")
 
 location_data <- readr::read_csv(file = "https://raw.githubusercontent.com/cdcepi/FluSight-forecast-hub/main/auxiliary-data/locations.csv") %>% dplyr::rename(geo_value = abbreviation) %>% mutate(geo_value = tolower(geo_value))
 
 target_data <- readr::read_csv(file = "https://raw.githubusercontent.com/cdcepi/FluSight-forecast-hub/main/target-data/target-hospital-admissions.csv") %>% 
   dplyr::rename(time_value = date)%>%
   dplyr::inner_join(location_data,
-                    by = join_by("location_name" == "location_name", "location" == "location")) %>% filter(time_value <= as.Date("2025-05-31"))
+                    by = join_by("location_name" == "location_name", "location" == "location")) %>% filter(time_value >= as.Date("2025-05-31"))
 
 output_df <- get_pmf_forecasts_from_quantile(
   quantile_forecasts = flusight_ensemble, locations_df = location_data, truth_df = target_data,
-  
   #model_output_quantile_only,  
   #location_data, # locations.csv auxiliary data
   #target_data, # applicable target data, should have same temporal resolution as model_output
