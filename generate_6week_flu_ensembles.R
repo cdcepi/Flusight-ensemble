@@ -21,7 +21,8 @@ flu_truth_current <- read.csv("https://raw.githubusercontent.com/cdcepi/FluSight
 flu_truth_current$target_variable<-'wk inc flu hosp'
 flu_truth_current$model<-'flu-truth'
 
-flu_dates_24_25 <- as.Date("2024-11-23") + weeks(6:28)#Starting 6 weeks later than the start of forecast (burn period)
+#flu_dates_24_25 <- as.Date("2024-11-23") + weeks(6:28)#Starting 6 weeks later than the start of forecast (burn period)
+flu_dates_25_26 <- as.Date("2025-11-22") + weeks(6:28)#Starting 6 weeks later than the start of forecast (burn period)
 task_id_cols <- c("reference_date", "location", "horizon", "target_variable", "target_end_date")
 
 
@@ -37,17 +38,18 @@ theta<-seq(0,100,0.1)
 forecasts_6week<-data.frame()
 current_ref_date <- lubridate::ceiling_date(Sys.Date(), "week") - days(1)
   #This the period of time we will use to evaluate performance
-  flu_dates_24_25_retro <- as.Date(current_ref_date) - weeks(1:6)
+  #flu_dates_24_25_retro <- as.Date(current_ref_date) - weeks(1:6)
+  flu_dates_25_26_retro <- as.Date(current_ref_date) - weeks(1)
   
   #Another loop across the training period
-  for (i in 1:length(flu_dates_24_25_retro)) {
-    forecast_date<-flu_dates_24_25_retro[i]
+  for (i in 1:length(flu_dates_25_26_retro)) {
+    forecast_date<-flu_dates_25_26_retro[i]
     #################################################################### End Original code
     ####################################################################  Flusight code
     #Change to location of new data
     #out_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/Flusight-ensemble/Test")
     #hub_path <- paste0("C:/Users/",Sys.info()["user"],"/Desktop/GitHub/FluSight-forecast-hub")
-    hub_path <- "FluSight-forecast-hub"
+    #hub_path <- "FluSight-forecast-hub"
     hub_con <- connect_hub(hub_path) 
     forecast_data <- hub_con |>
       dplyr::filter(
