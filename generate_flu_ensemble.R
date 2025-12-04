@@ -76,6 +76,7 @@ eligible_models <- data.frame(Model = file.names, Designated_Model = as.logical(
 file_path <- paste0("Model Inclusion/models-to-include-in-ensemble-", current_ref_date, ".csv")
 write.csv(eligible_models, file_path, row.names = FALSE)
 
+
 #write.csv(eligible_models ,paste0("Model Inclusion/models-to-include-in-ensemble-", current_ref_date, ".csv"))
 
 #eligible_models = read.csv(paste0("Model Inclusion/models-to-include-in-ensemble-", current_ref_date, ".csv"),header = TRUE)
@@ -91,6 +92,14 @@ quantile_forecasts <- current_forecasts |>
   dplyr::filter(target == "wk inc flu hosp") |>
   dplyr::mutate(output_type_id=as.character(as.numeric(output_type_id))) # ensures quantiles treated the same regardless of presence of trailing zeros
   
+included_models <- quantile_forecasts %>%
+  distinct(model_id) %>%
+  filter(model_id %in% eligible_models$Model) %>%
+  select(model_id)
+
+file_path <- paste0("../Desktop/GitHub/Flusight-ensemble/Model Selection/models-included-in-ensemble-", current_ref_date, ".csv")
+write.csv(included_models, file_path, row.names = FALSE)
+
 # generate median ensemble
 median_name <- "FluSight-median"
 median_ensemble_outputs <- quantile_forecasts |>
