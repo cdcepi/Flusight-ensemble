@@ -45,8 +45,8 @@ jobs:
         run: git clone https://github.com/cdcepi/FluSight-forecast-hub.git
       - name: Generate FluSight-ensemble csv file
         run:  Rscript generate_flu_ensemble.R
-      #- name: Generate 6-week ensemble csv file
-        #run:  Rscript generate_6week_flu_ensembles.R
+      - name: Generate 6-week ensemble csv file
+        run:  Rscript generate_6week_flu_ensembles.R
       - name: Generate PMF forecast csv file
         run:  Rscript create_quant_to_pmf_weekly.R
       - name: Commit changes and create PR 🚀
